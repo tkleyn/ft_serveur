@@ -21,6 +21,5 @@ RUN apt-get install -y mariadb-server
 RUN apt-get install -y php-fpm php-mysql
 
 
-
 # Port to run the container
 EXPOSE 80
