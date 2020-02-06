@@ -3,23 +3,30 @@ FROM debian:buster
 
 RUN apt-get update
 
-# Copying wordpress
-RUN mkdir /var/www/wordpress
-COPY sources/wordpress /var/www/
-
-# Copying phpmyadmin
-RUN mkdir /var/www/phpmyadmin
-COPY sources/phpmyadmin /var/www/
-
-# Installing ngnix
-RUN apt-get install -y ngnix
+# Installing nginx
+RUN apt-get install -y nginx
 
 # Installing Mariadb (fork of mysql)
 RUN apt-get install -y mariadb-server
 
+# Copying wordpress
+COPY srcs/wordpress /var/www/wordpress
+
+# Copying phpmyadmin
+COPY srcs/phpmyadmin /var/www/phpmyadmin
+
 # Installing PHP tools
-RUN apt-get install -y php-fpm php-mysql
+RUN apt-get install -y php7.3-fpm php-mysql
+
+#
+COPY srcs/nginx_conf /etc/nginx/sites-available/
+
+#
+RUN ln -s /etc/nginx/sites-available/nginx_conf /etc/nginx/sites-enabled/
+
+#
+RUN unlink /etc/nginx/sites-enabled/default
 
 
-# Port to run the container
-EXPOSE 80
+# 
+CMD service mysql start && service php7.3-fpm start && nginx -g "daemon off;"
