@@ -24,8 +24,14 @@ COPY srcs/nginx_conf /etc/nginx/sites-available/
 # Linking nginx configuration file
 RUN ln -s /etc/nginx/sites-available/nginx_conf /etc/nginx/sites-enabled/
 
-# Uninking nginx default configuration file
+# Unlinking nginx default configuration file
 RUN unlink /etc/nginx/sites-enabled/default
+
+# Copying DB creation file
+COPY srcs/maria_conf .
+
+# Launching and creating DB with maria_conf as root
+RUN service mysql start && cat maria_conf | mariadb -u root
 
 # Starting mysql php nginx
 CMD service mysql start && service php7.3-fpm start && nginx -g "daemon off;"
